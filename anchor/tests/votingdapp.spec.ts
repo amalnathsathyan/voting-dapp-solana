@@ -94,4 +94,21 @@ describe("votingdapp", () => {
     console.log(candiadate2Pda)
 
   })
+  it("votes two times on candidate1", async()=>{
+    const votingProgram = new Program<Votingdapp>(IDL, provider);
+    const [candiadate1PdaAddress] = PublicKey.findProgramAddressSync([(new anchor.BN('1001')).toArrayLike(Buffer,"le",8),Buffer.from("Dubai")],votingDappAddress);
+    const [candiadate2PdaAddress] = PublicKey.findProgramAddressSync([(new anchor.BN('1001')).toArrayLike(Buffer,"le",8),Buffer.from("Tokyo")],votingDappAddress);
+
+    await votingProgram.methods.vote(new anchor.BN('1001'),"Dubai").accountsPartial({candidate:candiadate1PdaAddress}).rpc()
+    await votingProgram.methods.vote(new anchor.BN('1001'),"Dubai").accountsPartial({candidate:candiadate1PdaAddress}).rpc()
+
+    const candiadate1Pda = await votingProgram.account.candidate.fetch(candiadate1PdaAddress);
+    const candiadate2Pda = await votingProgram.account.candidate.fetch(candiadate2PdaAddress);
+    console.log(candiadate1Pda);
+    console.log(candiadate2Pda);
+
+    expect(candiadate1Pda.candidateVotes.toNumber()).toEqual(3);
+    expect(candiadate2Pda.candidateVotes.toNumber()).toEqual(1);
+    
+  })
 });
