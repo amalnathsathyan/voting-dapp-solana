@@ -26,6 +26,18 @@
           "signer": true
         },
         {
+          "name": "poll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "_poll_id"
+              }
+            ]
+          }
+        },
+        {
           "name": "candidate",
           "writable": true,
           "pda": {
@@ -108,6 +120,55 @@
         {
           "name": "poll_end",
           "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "vote",
+      "discriminator": [
+        227,
+        110,
+        155,
+        23,
+        136,
+        126,
+        172,
+        25
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "signer": true
+        },
+        {
+          "name": "candidate",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "_poll_id"
+              },
+              {
+                "kind": "arg",
+                "path": "_candidate_name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_poll_id",
+          "type": "u64"
+        },
+        {
+          "name": "_candidate_name",
+          "type": "string"
         }
       ]
     }

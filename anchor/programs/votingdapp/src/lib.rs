@@ -28,9 +28,31 @@ use super::*;
     let candidate = &mut ctx.accounts.candidate;
     candidate.candidate_votes = 0;
     candidate.candidate_name = _candiate_name;
+    let poll = &mut ctx.accounts.poll;
+    poll.candidate_amount += 1;
     Ok(())
    }
 
+   pub fn vote(ctx:Context<Vote>,_poll_id:u64,_candidate_name:String) -> Result<()> {
+    let candidate = &mut ctx.accounts.candidate;
+    candidate.candidate_name = _candidate_name;
+    candidate.candidate_votes += 1;
+      Ok(())
+   }
+
+}
+
+#[derive(Accounts)]
+#[instruction(_poll_id:u64,_candidate_name:String)]
+pub struct Vote <'info> {
+  pub voter: Signer<'info>,
+  #[account(
+    mut,
+    seeds = [_poll_id.to_le_bytes().as_ref(), _candidate_name.as_bytes()],
+    bump
+  )]
+  pub candidate: Account<'info, Candidate>,
+  pub system_program:Program<'info, System>
 }
 
 #[derive(Accounts)]
@@ -38,6 +60,12 @@ use super::*;
 pub struct InitializeCandidate<'info>{
   #[account(mut)]
   pub admin: Signer<'info>,
+
+  #[account(
+    mut,
+    seeds = [_poll_id.to_le_bytes().as_ref()],
+  bump)]
+  pub poll: Account<'info,Poll>,
 
   #[account(
     init,
